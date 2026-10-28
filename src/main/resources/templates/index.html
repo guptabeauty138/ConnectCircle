@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ConnectCircle helps students discover communities, share interests, and build meaningful connections.">
+  <title>ConnectCircle | Find Your People</title>
+  <style>
+    :root {
+      --ink: #20213d;
+      --muted: #6f718b;
+      --purple: #6c4df6;
+      --purple-dark: #5135d5;
+      --pink: #ff6fae;
+      --mint: #baf5dc;
+      --yellow: #ffe49b;
+      --blue: #a9d8ff;
+      --paper: #fbfaff;
+      --white: #fff;
+      --line: #ece9f7;
+      --shadow: 0 18px 55px rgba(54, 39, 120, .10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 95px; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+    }
+    button, input, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; }
+    .container { width: min(1120px, 88%); margin-inline: auto; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(236,233,247,.9);
+    }
+    .navbar {
+      min-height: 78px; display: flex; align-items: center;
+      justify-content: space-between; gap: 22px;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.35rem; letter-spacing: -.7px; }
+    .brand-mark {
+      width: 40px; height: 40px; display: grid; place-items: center;
+      border-radius: 14px; color: white; font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      box-shadow: 0 8px 18px rgba(108,77,246,.25);
+    }
+    .brand span:last-child { color: var(--purple); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { color: #595b76; font-size: .92rem; font-weight: 700; transition: color .2s; }
+    .nav-links a:hover { color: var(--purple); }
+    .nav-cta, .btn {
+      display: inline-flex; justify-content: center; align-items: center; gap: 9px;
+      border: 0; border-radius: 14px; padding: 12px 19px; font-weight: 800;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .nav-cta, .btn-primary { color: white; background: var(--purple); box-shadow: 0 9px 22px rgba(108,77,246,.22); }
+    .nav-cta:hover, .btn-primary:hover { background: var(--purple-dark); transform: translateY(-2px); box-shadow: 0 13px 28px rgba(108,77,246,.28); }
+    .btn-light { color: var(--ink); background: white; border: 1px solid var(--line); }
+    .btn-light:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+    .hero {
+      position: relative; overflow: hidden; padding: 88px 0 78px;
+      background:
+        radial-gradient(ellipse at 12% 10%, rgba(255,111,174,.20), transparent 29%),
+        radial-gradient(ellipse at 90% 12%, rgba(169,216,255,.55), transparent 28%),
+        radial-gradient(ellipse at 60% 100%, rgba(186,245,220,.38), transparent 35%),
+        linear-gradient(180deg, #fff 0%, #fbfaff 100%);
+    }
+    .hero::before, .hero::after {
+      content: ""; position: absolute; border-radius: 50%; pointer-events: none;
+      border: 1px solid rgba(108,77,246,.13);
+    }
+    .hero::before { width: 270px; height: 270px; right: -100px; top: 190px; }
+    .hero::after { width: 150px; height: 150px; left: -65px; bottom: 15px; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 52px; position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px;
+      border-radius: 999px; background: #f0edff; color: var(--purple-dark);
+      font-size: .76rem; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
+      border: 1px solid #e0d9ff;
+    }
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: #42c995; box-shadow: 0 0 0 4px #42c99522; }
+    h1 { margin: 20px 0 18px; font-size: clamp(2.65rem, 5vw, 4.5rem); line-height: 1.06; letter-spacing: -3px; max-width: 650px; }
+    .gradient-text { background: linear-gradient(100deg, var(--purple), #e84d9b 72%); color: transparent; background-clip: text; -webkit-background-clip: text; }
+    .hero-copy { color: var(--muted); font-size: 1.08rem; max-width: 540px; margin-bottom: 27px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-note { display: flex; align-items: center; gap: 10px; margin-top: 24px; color: var(--muted); font-size: .86rem; }
+    .avatar-stack { display: flex; }
+    .avatar-stack span { width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid white; border-radius: 50%; margin-left: -7px; font-size: .9rem; background: var(--yellow); }
+    .avatar-stack span:first-child { margin-left: 0; background: var(--pink); }
+    .avatar-stack span:nth-child(3) { background: var(--mint); }
+    .avatar-stack span:nth-child(4) { background: var(--blue); }
+
+    .hero-art { min-height: 410px; position: relative; display: grid; place-items: center; }
+    .orbit { position: absolute; width: 340px; height: 340px; border: 1px dashed #cfc6ff; border-radius: 50%; animation: rotate 32s linear infinite; }
+    .orbit::before, .orbit::after { content: ""; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--pink); top: 42px; left: 45px; }
+    .orbit::after { background: #6bdcb2; top: auto; left: auto; right: 12px; bottom: 100px; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .art-card {
+      position: absolute; padding: 18px; background: white; border: 1px solid #f0edfb;
+      border-radius: 22px; box-shadow: var(--shadow); animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--tilt, 0deg)); } 50% { transform: translateY(-9px) rotate(var(--tilt, 0deg)); } }
+    .art-main { position: relative; z-index: 2; width: 235px; padding: 25px; text-align: center; border-radius: 28px; background: linear-gradient(145deg, #f2edff, #fff0f7); border: 1px solid white; box-shadow: 0 25px 65px rgba(86,62,180,.17); }
+    .art-main .big-emoji { font-size: 4.4rem; line-height: 1.2; }
+    .art-main h3 { margin-top: 10px; font-size: 1.25rem; }
+    .art-main p { color: var(--muted); font-size: .85rem; margin-top: 5px; }
+    .art-pill { display: inline-flex; margin-top: 15px; background: white; border-radius: 99px; padding: 7px 12px; font-size: .75rem; font-weight: 800; color: var(--purple); }
+    .art-coding { top: 32px; left: 0; --tilt: -5deg; }
+    .art-arts { right: -2px; top: 78px; --tilt: 5deg; animation-delay: .7s; }
+    .art-sports { bottom: 28px; left: 22px; --tilt: 4deg; animation-delay: 1.2s; }
+    .art-music { right: 0; bottom: 8px; --tilt: -5deg; animation-delay: .3s; }
+    .mini-icon { font-size: 1.7rem; }
+    .art-card strong { display: block; font-size: .88rem; margin-top: 4px; }
+    .art-card small { color: var(--muted); font-size: .72rem; }
+
+    .stats-strip { position: relative; z-index: 2; margin-top: -1px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .stat { text-align: center; padding: 22px 14px; background: white; border: 1px solid var(--line); border-radius: 18px; }
+    .stat strong { display: block; font-size: 1.5rem; letter-spacing: -.5px; }
+    .stat span { color: var(--muted); font-size: .86rem; }
+
+    section.content-section { padding: 88px 0; }
+    .section-head { max-width: 650px; margin: 0 auto 38px; text-align: center; }
+    .section-kicker { color: var(--purple); text-transform: uppercase; letter-spacing: 1.4px; font-size: .75rem; font-weight: 900; }
+    .section-head h2 { margin: 8px 0 10px; font-size: clamp(2rem, 3.3vw, 2.8rem); letter-spacing: -1.5px; line-height: 1.15; }
+    .section-head p { color: var(--muted); }
+    .community-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .community-card {
+      position: relative; overflow: hidden; min-height: 250px; padding: 25px;
+      border: 1px solid var(--line); border-radius: 24px; background: white;
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+    .community-card:hover { transform: translateY(-7px); box-shadow: var(--shadow); border-color: #d8d0ff; }
+    .community-card::after { content: ""; position: absolute; width: 140px; height: 140px; right: -48px; bottom: -55px; border-radius: 50%; background: var(--card-tint); opacity: .65; }
+    .community-icon { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 18px; background: var(--card-tint); font-size: 1.8rem; margin-bottom: 18px; }
+    .community-card h3 { font-size: 1.2rem; margin-bottom: 7px; }
+    .community-card p { position: relative; z-index: 1; color: var(--muted); font-size: .91rem; margin-bottom: 19px; }
+    .card-bottom { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tiny-tag { padding: 5px 9px; border-radius: 999px; background: #f6f4ff; color: #6252bd; font-size: .7rem; font-weight: 800; }
+    .join-btn { border: 0; color: var(--purple); background: transparent; font-size: .83rem; font-weight: 900; white-space: nowrap; }
+    .join-btn:hover { color: var(--pink); }
+    .community-card[data-community="coding"] { --card-tint: #dcd5ff; }
+    .community-card[data-community="arts"] { --card-tint: #ffe0ef; }
+    .community-card[data-community="sports"] { --card-tint: #d5f7e7; }
+    .community-card[data-community="projects"] { --card-tint: #d8edff; }
+    .community-card[data-community="music"] { --card-tint: #fff0bd; }
+    .community-card[data-community="gaming"] { --card-tint: #ffdfd4; }
+
+    .feature-band { padding: 0 0 88px; }
+    .feature-panel {
+      display: grid; grid-template-columns: .95fr 1.05fr; gap: 35px; align-items: center;
+      padding: 42px; border-radius: 30px; overflow: hidden;
+      background: linear-gradient(125deg, #e9e4ff, #fff0f7 65%, #e5fff3);
+      border: 1px solid white;
+    }
+    .feature-panel h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); line-height: 1.15; letter-spacing: -1.2px; margin: 10px 0 14px; }
+    .feature-panel p { color: #68647f; margin-bottom: 20px; }
+    .feature-list { display: grid; gap: 12px; }
+    .feature-item { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.78); border: 1px solid rgba(255,255,255,.9); border-radius: 15px; padding: 13px 15px; font-weight: 750; }
+    .check { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 28px; border-radius: 9px; color: #187e59; background: #c9f8e5; font-weight: 900; }
+    .feature-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; transform: rotate(2deg); }
+    .feature-tile { min-height: 135px; padding: 19px; display: flex; flex-direction: column; justify-content: space-between; border-radius: 22px; background: white; box-shadow: 0 12px 30px rgba(80,65,130,.08); }
+    .feature-tile:nth-child(2) { transform: translateY(24px); background: #fff8d9; }
+    .feature-tile:nth-child(3) { background: #e2fff2; }
+    .feature-tile:nth-child(4) { transform: translateY(24px); background: #f1eaff; }
+    .feature-tile span { font-size: 2rem; }
+    .feature-tile strong { font-size: .95rem; }
+
+    .assistant-section { padding: 88px 0; background: #f1efff; position: relative; overflow: hidden; }
+    .assistant-section::before { content: ""; position: absolute; width: 330px; height: 330px; left: -160px; top: 100px; border-radius: 50%; background: #ffdeef; filter: blur(4px); opacity: .7; }
+    .assistant-section::after { content: ""; position: absolute; width: 300px; height: 300px; right: -140px; bottom: -120px; border-radius: 50%; background: #c8f7e4; filter: blur(5px); opacity: .8; }
+    .assistant-layout { position: relative; z-index: 1; display: grid; grid-template-columns: .8fr 1.2fr; align-items: center; gap: 48px; }
+    .assistant-copy h2 { font-size: clamp(2.1rem, 3.5vw, 3rem); line-height: 1.12; letter-spacing: -1.5px; margin: 12px 0 15px; }
+    .assistant-copy p { color: var(--muted); margin-bottom: 21px; }
+    .assistant-perks { display: grid; gap: 11px; color: #4f506c; font-weight: 750; font-size: .92rem; }
+    .assistant-perks span { display: flex; gap: 10px; align-items: center; }
+
+    .chat-shell { background: white; border: 1px solid #e6e1ff; border-radius: 27px; overflow: hidden; box-shadow: 0 28px 75px rgba(70,53,145,.18); }
+    .chat-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 19px 22px; color: white; background: linear-gradient(110deg, #6047ed, #9663f6 70%, #df72b5); }
+    .chat-person { display: flex; align-items: center; gap: 12px; }
+    .bot-avatar { position: relative; display: grid; place-items: center; width: 48px; height: 48px; border: 2px solid rgba(255,255,255,.65); border-radius: 17px; background: rgba(255,255,255,.22); font-size: 1.55rem; }
+    .online-indicator { position: absolute; width: 11px; height: 11px; right: -2px; bottom: -2px; border: 2px solid #7352f2; border-radius: 50%; background: #5df0b3; }
+    .chat-person h3 { font-size: 1rem; line-height: 1.35; }
+    .chat-person p { opacity: .83; font-size: .76rem; }
+    .prototype-pill { padding: 6px 9px; border: 1px solid rgba(255,255,255,.35); border-radius: 99px; font-size: .68rem; font-weight: 850; white-space: nowrap; }
+    .chat-body { padding: 23px; }
+    .chat-welcome { display: flex; gap: 10px; align-items: flex-start; }
+    .tiny-bot { display: grid; place-items: center; flex: 0 0 34px; width: 34px; height: 34px; border-radius: 12px; background: #eee9ff; }
+    .bubble { max-width: 90%; padding: 13px 15px; border-radius: 4px 17px 17px 17px; background: #f4f2ff; color: #454362; font-size: .91rem; overflow-wrap: anywhere; }
+    .quick-label { margin: 20px 0 9px; color: #85849e; font-size: .7rem; font-weight: 900; letter-spacing: 1px; }
+    .quick-prompts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .quick-prompt { padding: 8px 11px; border: 1px solid #e5e0ff; border-radius: 999px; background: white; color: #6553c5; font-size: .78rem; font-weight: 800; transition: .2s; }
+    .quick-prompt:hover { border-color: var(--purple); background: #f4f1ff; transform: translateY(-1px); }
+    .chat-messages { display: grid; gap: 12px; max-height: 250px; overflow-y: auto; padding: 2px 2px 12px; }
+    .chat-message { display: flex; gap: 9px; align-items: flex-start; }
+    .chat-message.user { justify-content: flex-end; }
+    .chat-message.user .bubble { order: -1; color: white; background: linear-gradient(120deg, #6c4df6, #9364f6); border-radius: 17px 4px 17px 17px; }
+    .chat-message .tiny-bot { flex: 0 0 30px; width: 30px; height: 30px; border-radius: 10px; font-size: .9rem; }
+    .chat-message.user .tiny-bot { display: none; }
+    .chat-form { display: flex; align-items: center; gap: 9px; padding: 8px; border: 1px solid #e5e1f5; border-radius: 17px; background: #fcfbff; }
+    .chat-form input { flex: 1; min-width: 0; padding: 9px 10px; border: 0; outline: 0; color: var(--ink); background: transparent; }
+    .chat-form input::placeholder { color: #a0a0b5; }
+    .send-btn { display: grid; place-items: center; width: 43px; height: 43px; flex: 0 0 43px; border: 0; border-radius: 13px; color: white; background: var(--purple); font-size: 1.1rem; transition: .2s; }
+    .send-btn:hover { background: var(--purple-dark); transform: translateY(-1px); }
+    .chat-note { margin: 11px 3px 0; color: #9291a7; font-size: .72rem; }
+
+    .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .step-card { padding: 25px; border: 1px solid var(--line); border-radius: 22px; background: white; }
+    .step-number { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: #eee9ff; color: var(--purple); font-weight: 950; margin-bottom: 17px; }
+    .step-card:nth-child(2) .step-number { background: #ffe4f0; color: #c53f82; }
+    .step-card:nth-child(3) .step-number { background: #d9f9e9; color: #187e59; }
+    .step-card h3 { margin-bottom: 7px; }
+    .step-card p { color: var(--muted); font-size: .9rem; }
+
+    .cta-section { padding: 0 0 88px; }
+    .cta-panel { padding: 48px 25px; text-align: center; border-radius: 28px; color: white; background: linear-gradient(110deg, #5c45e8, #9560f2 58%, #e36fb2); box-shadow: 0 22px 55px rgba(108,77,246,.2); }
+    .cta-panel h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); letter-spacing: -1px; line-height: 1.2; margin-bottom: 10px; }
+    .cta-panel p { max-width: 570px; margin: 0 auto 22px; color: rgba(255,255,255,.85); }
+    .cta-panel .btn { background: white; color: var(--purple-dark); }
+    .cta-panel .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px #3926a044; }
+
+    footer { padding: 27px 0; border-top: 1px solid var(--line); background: white; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; color: var(--muted); font-size: .83rem; }
+    .footer-inner strong { color: var(--purple); }
+    .toast { position: fixed; left: 50%; bottom: 24px; z-index: 50; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 12px 18px; border-radius: 13px; color: white; background: #252344; box-shadow: var(--shadow); font-size: .88rem; font-weight: 750; transition: .25s; }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    @media (max-width: 900px) {
+      .hero-grid, .assistant-layout, .feature-panel { grid-template-columns: 1fr; }
+      .hero-grid { gap: 15px; }
+      .hero-art { min-height: 390px; max-width: 500px; width: 100%; margin: 0 auto; }
+      .hero-copy { max-width: 650px; }
+      .assistant-layout { gap: 30px; }
+      .assistant-copy { text-align: center; }
+      .assistant-perks { width: fit-content; margin: 0 auto; text-align: left; }
+      .feature-panel { gap: 28px; }
+      .feature-visual { max-width: 540px; width: 100%; margin: 0 auto; }
+      .community-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 640px) {
+      .container { width: min(92%, 520px); }
+      .navbar { min-height: 70px; flex-wrap: wrap; padding: 12px 0; }
+      .brand { font-size: 1.15rem; }
+      .brand-mark { width: 36px; height: 36px; }
+      .nav-links { order: 3; width: 100%; justify-content: space-between; gap: 12px; padding: 3px 0 5px; }
+      .nav-links a { font-size: .8rem; }
+      .nav-cta { padding: 10px 13px; font-size: .82rem; }
+      .hero { padding: 58px 0 44px; }
+      h1 { letter-spacing: -1.8px; font-size: clamp(2.45rem, 12vw, 3.7rem); }
+      .hero-copy { font-size: .98rem; }
+      .hero-actions .btn { flex: 1; padding: 12px 13px; font-size: .86rem; }
+      .hero-art { min-height: 330px; transform: scale(.92); margin: -5px auto -15px; }
+      .orbit { width: 275px; height: 275px; }
+      .art-main { width: 190px; padding: 20px; }
+      .art-main .big-emoji { font-size: 3.5rem; }
+      .art-card { padding: 12px; }
+      .art-coding { left: -4px; top: 18px; }
+      .art-arts { right: -4px; top: 54px; }
+      .art-sports { left: 0; bottom: 18px; }
+      .art-music { right: -5px; bottom: 0; }
+      .stats-grid { gap: 8px; }
+      .stat { padding: 15px 7px; border-radius: 14px; }
+      .stat strong { font-size: 1.2rem; }
+      .stat span { font-size: .7rem; }
+      section.content-section, .assistant-section { padding: 64px 0; }
+      .section-head { margin-bottom: 27px; }
+      .section-head h2 { letter-spacing: -1px; }
+      .community-grid, .steps-grid { grid-template-columns: 1fr; }
+      .community-card { min-height: auto; padding: 22px; }
+      .feature-band { padding-bottom: 64px; }
+      .feature-panel { padding: 25px 20px; border-radius: 23px; }
+      .feature-visual { gap: 9px; }
+      .feature-tile { min-height: 115px; padding: 14px; }
+      .feature-tile span { font-size: 1.7rem; }
+      .chat-topbar { padding: 15px; }
+      .chat-body { padding: 16px; }
+      .prototype-pill { font-size: .6rem; }
+      .chat-form input { font-size: .9rem; }
+      .quick-prompt { font-size: .73rem; }
+      .cta-section { padding-bottom: 64px; }
+      .cta-panel { padding: 37px 19px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Main navigation">
+      <a class="brand" href="#home" aria-label="ConnectCircle home">
+        <span class="brand-mark">✦</span><span>Connect<span>Circle</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#communities">Communities</a>
+        <a href="#discover">Discover</a>
+        <a href="#assistant">AI Assistant</a>
+      </div>
+      <a class="nav-cta" href="#communities">Find your circle <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Your people are out there</div>
+          <h1>Big interests.<br>Real friends.<br><span class="gradient-text">Your kind of circle.</span></h1>
+          <p class="hero-copy">A little place on the internet for students to find their people, share what they love, build cool things, and feel like they belong.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#communities">Explore communities <span aria-hidden="true">→</span></a>
+            <a class="btn btn-light" href="#assistant">Meet your AI buddy <span aria-hidden="true">✦</span></a>
+          </div>
+          <div class="hero-note">
+            <div class="avatar-stack" aria-hidden="true"><span>🎨</span><span>💻</span><span>⚽</span><span>🎧</span></div>
+            <span>For curious minds, creative hearts, and new beginnings.</span>
+          </div>
+        </div>
+
+        <div class="hero-art" aria-label="Illustration of student interests">
+          <div class="orbit"></div>
+          <div class="art-card art-coding"><span class="mini-icon">💻</span><strong>Code together</strong><small>Build something awesome</small></div>
+          <div class="art-card art-arts"><span class="mini-icon">🎨</span><strong>Make it yours</strong><small>Ideas welcome here</small></div>
+          <div class="art-card art-sports"><span class="mini-icon">🏸</span><strong>Move & play</strong><small>Find your team</small></div>
+          <div class="art-card art-music"><span class="mini-icon">🎧</span><strong>Share your vibe</strong><small>Music brings us close</small></div>
+          <div class="art-main">
+            <div class="big-emoji" aria-hidden="true">🫶</div>
+            <h3>Find your people</h3>
+            <p>Good things start with one hello.</p>
+            <span class="art-pill">✨ Come as you are</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-strip">
+      <div class="container stats-grid">
+        <div class="stat"><strong>💡 Ideas</strong><span>Turn curiosity into projects</span></div>
+        <div class="stat"><strong>🤝 Belonging</strong><span>Connect without the pressure</span></div>
+        <div class="stat"><strong>🌱 Growth</strong><span>Learn something together</span></div>
+      </div>
+    </div>
+
+    <section class="content-section" id="communities">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Find your circle</span>
+          <h2>There's a space for <span class="gradient-text">your kind of awesome.</span></h2>
+          <p>Choose what you're into. Meet students who get excited about the same things you do.</p>
+        </div>
+
+        <div class="community-grid">
+          <article class="community-card" data-community="coding">
+            <div class="community-icon">💻</div>
+            <h3>Coding Circle</h3>
+            <p>Practice coding, debug together, join study sessions, and turn your ideas into real projects.</p>
+            <div class="card-bottom"><div class="tag-list"><span class="tiny-tag">Java</span><span class="tiny-tag">Web dev</span></div><button class="join-btn" type="button" data-join="Coding Circle">Explore circle ↗</button></div>
+          </article>
+          <article class="community-card" data-community="arts">
+            <div class="community-icon">🎨</div>
+            <h3>Creative Corner</h3>
+            <p>A home for artists, designers, photographers, writers, and anyone who loves making things.</p>
+            <div class="card-bottom"><div class="tag-list"><span class="tiny-tag">Art</span><span class="tiny-tag">Design</span></div><button class="join-btn" type="button" data-join="Creative Corner">Explore circle ↗</button></div>
+          </article>
+          <article class="community-card" data-community="sports">
+            <div class="community-icon">🏸</div>
+            <h3>Sports & Fitness</h3>
+            <p>Find a practice partner, share your fitness goals, or get a friendly game going after class.</p>
+            <div class="card-bottom"><div class="tag-list"><span class="tiny-tag">Teamwork</span><span class="tiny-tag">Wellness</span></div><button class="join-btn" type="button" data-join="Sports & Fitness">Explore circle ↗</button></div>
+          </article>
+          <article class="community-card" data-community="projects">
+            <div class="community-icon">🛠️</div>
+            <h3>Project Playground</h3>
+            <p>Find teammates, exchange feedback, and build hackathon demos and portfolio projects.</p>
+            <div class="card-bottom"><div class="tag-list"><span class="tiny-tag">Hackathons</span><span class="tiny-tag">Build</span></div><button class="join-btn" type="button" data-join="Project Playground">Explore circle ↗</button></div>
+          </article>
+          <article class="community-card" data-community="music">
+            <div class="community-icon">🎵</div>
+            <h3>Music & Mood</h3>
+            <p>Share playlists, discover new sounds, talk about your favourite artists, and find your vibe.</p>
+            <div class="card-bottom"><div class="tag-list"><span class="tiny-tag">Playlists</span><span class="tiny-tag">Jam</span></div><button class="join-btn" type="button" data-join="Music & Mood">Explore circle ↗</button></div>
+          </article>
+          <article class="community-card" data-community="gaming">
+            <div class="community-icon">🎮</div>
+            <h3>Gaming Guild</h3>
+            <p>Meet friendly players, talk strategy, share game recommendations, and team up for fun.</p>
+            <div class="card-bottom"><div class="tag-list"><span class="tiny-tag">Games</span><span class="tiny-tag">Team up</span></div><button class="join-btn" type="button" data-join="Gaming Guild">Explore circle ↗</button></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature-band" id="discover">
+      <div class="container">
+        <div class="feature-panel">
+          <div>
+            <span class="section-kicker">More than a profile</span>
+            <h2>Your next favourite thing could start with one conversation.</h2>
+            <p>ConnectCircle is designed to make finding your people feel simple, welcoming, and a little more fun.</p>
+            <div class="feature-list">
+              <div class="feature-item"><span class="check">✓</span> Discover people through shared interests</div>
+              <div class="feature-item"><span class="check">✓</span> Find study buddies and project teammates</div>
+              <div class="feature-item"><span class="check">✓</span> Get ideas when you're not sure where to start</div>
+            </div>
+          </div>
+          <div class="feature-visual" aria-label="ConnectCircle activities">
+            <div class="feature-tile"><span>🧠</span><strong>Study sessions</strong></div>
+            <div class="feature-tile"><span>🎨</span><strong>Creative challenges</strong></div>
+            <div class="feature-tile"><span>🚀</span><strong>Project teams</strong></div>
+            <div class="feature-tile"><span>💬</span><strong>Friendly conversations</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+          <section class="content-section" id="student-discovery">
+    <div class="container">
+        <div class="section-head">
+            <span class="section-kicker">Connect with students</span>
+            <h2>Meet your <span class="gradient-text">people.</span></h2>
+            <p>Discover students who share your interests.</p>
+        </div>
+
+        <div style="max-width: 520px; margin: 0 auto 24px;">
+    <label for="interestSearch">Find students by interest</label>
+    <input
+        id="interestSearch"
+        type="text"
+        placeholder="Try Java, Electronics, Badminton..."
+        style="width: 100%; padding: 13px; border: 1px solid #ddd; border-radius: 12px;"
+    >
+</div>
+
+<div id="studentList" class="community-grid">
+    <p>Loading students...</p>
+</div>
+    </div>
+</section>
+
+    <section class="assistant-section" id="assistant">
+      <div class="container assistant-layout">
+        <div class="assistant-copy">
+          <span class="section-kicker">Your friendly sidekick</span>
+          <h2>Meet CircleBot.<br><span class="gradient-text">Ask away.</span></h2>
+          <p>Not sure which community fits you? Need a project idea or a little help getting started? Tell CircleBot what's on your mind.</p>
+          <div class="assistant-perks">
+            <span>🌈 <span>Friendly ideas without judgement</span></span>
+            <span>🧭 <span>Help finding a community</span></span>
+            <span>🧩 <span>Study and project brainstorming</span></span>
+          </div>
+        </div>
+
+        <div class="chat-shell">
+          <div class="chat-topbar">
+            <div class="chat-person">
+              <div class="bot-avatar" aria-hidden="true">🤖<span class="online-indicator"></span></div>
+              <div><h3>CircleBot</h3><p>Your ConnectCircle companion</p></div>
+            </div>
+            <span class="prototype-pill">INTERACTIVE DEMO</span>
+          </div>
+          <div class="chat-body">
+            <div class="chat-welcome">
+              <div class="tiny-bot" aria-hidden="true">✨</div>
+              <div class="bubble">Hey there! 👋 I'm CircleBot. Tell me what you love, what you're working on, or what you need help with. Let's find your next step together!</div>
+            </div>
+
+            <p class="quick-label">TRY ASKING ME ABOUT...</p>
+            <div class="quick-prompts">
+              <button class="quick-prompt" type="button" data-prompt="Help me find a community">🧭 Find a community</button>
+              <button class="quick-prompt" type="button" data-prompt="Suggest a coding project for a student">💻 Project ideas</button>
+              <button class="quick-prompt" type="button" data-prompt="Help me make friends at college">🤝 Making friends</button>
+              <button class="quick-prompt" type="button" data-prompt="I feel stressed about my studies">🌱 Study stress</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages" aria-live="polite" aria-label="Chat messages"></div>
+            <form class="chat-form" id="chatForm">
+              <input id="chatInput" type="text" maxlength="500" placeholder="Type your message..." aria-label="Type your message" autocomplete="off" required>
+              <button class="send-btn" type="submit" aria-label="Send message">➤</button>
+            </form>
+            <p class="chat-note">Demo mode: replies are generated by simple built-in rules, not a live AI model. Please don't share passwords or sensitive personal information.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Easy as 1, 2, 3</span>
+          <h2>Start small. <span class="gradient-text">Find your people.</span></h2>
+          <p>You don't need a perfect introduction. Just bring a little curiosity.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card"><div class="step-number">01</div><h3>Pick what you love</h3><p>Explore coding, arts, sports, music, gaming, or student projects.</p></article>
+          <article class="step-card"><div class="step-number">02</div><h3>Start a conversation</h3><p>Use CircleBot for ideas, or think of one simple question to ask someone.</p></article>
+          <article class="step-card"><div class="step-number">03</div><h3>Grow together</h3><p>Share what you know, learn from others, and create something meaningful.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-panel">
+          <h2>Your circle is waiting to be discovered.</h2>
+          <p>Bring your interests, your questions, and your ideas. There's room to learn and grow together.</p>
+          <a class="btn" href="#communities">Find a community <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+
+<section class="content-section" id="create-profile">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-kicker">Join ConnectCircle</span>
+      <h2>Create your <span class="gradient-text">student profile.</span></h2>
+      <p>Start building connections with your fellow students.</p>
+    </div>
+
+    <form id="profileForm" style="max-width:520px;margin:auto;background:white;padding:28px;border:1px solid #ece9f7;border-radius:22px;display:grid;gap:16px;">
+      <label for="studentName">Full name</label>
+      <input id="studentName" name="name" type="text" placeholder="Enter your name" required maxlength="100" style="padding:13px;border:1px solid #ddd;border-radius:10px;">
+
+      <label for="studentEmail">Email address</label>
+      <input id="studentEmail" name="email" type="email" placeholder="Enter your email" required maxlength="150" style="padding:13px;border:1px solid #ddd;border-radius:10px;">
+
+        <label for="studentInterests">Your Interests</label>
+<input
+    id="studentInterests"
+    name="interests"
+    type="text"
+    placeholder="Java, Electronics, Painting, Badminton"
+    required
+>
+
+      <button class="btn btn-primary" type="submit">Create Profile</button>
+      <p id="profileMessage" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+
+<!-- HELP & SUPPORT SECTION -->
+<section id="help" class="help-section">
+  <div class="help-container">
+
+    <div class="help-heading">
+      <span class="help-tag">HELP CENTER</span>
+      <h2>How can we help you?</h2>
+      <p>
+        Find answers, get guidance, and make your student journey
+        easier with ConnectCircle.
+      </p>
+    </div>
+
+    
+<div class="help-grid">
+
+  <div class="help-card">
+    <div class="help-icon">📚</div>
+    <h3>Academic Help</h3>
+    <p>Get help with subjects, notes, exams, and study resources.</p>
+    <a href="#student-discovery">Explore resources →</a>
+  </div>
+
+  <div class="help-card">
+    <div class="help-icon">🤝</div>
+    <h3>Community Support</h3>
+    <p>Connect with fellow students and learn together.</p>
+    <a href="#communities">Find your community →</a>
+  </div>
+
+  <div class="help-card">
+    <div class="help-icon">🤖</div>
+    <h3>AI Study Assistant</h3>
+    <p>Have a question? Get quick guidance from CircleBot.</p>
+    <button
+      type="button"
+      onclick="document.getElementById('assistant').scrollIntoView({behavior:'smooth'});"
+    >
+      Ask CircleBot →
+    </button>
+  </div>
+
+</div>
+
+
+    <div class="help-contact">
+      <div>
+        <h3>Still need help?</h3>
+        <p>We're here to make your ConnectCircle experience better.</p>
+      </div>
+      <a href="mailto:support@connectcircle.com" class="help-contact-btn">
+        Contact Support
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+.help-section {
+  padding: 80px 7%;
+  background: linear-gradient(135deg, #f8faff, #eef2ff);
+  font-family: Arial, sans-serif;
+}
+
+.help-container {
+  max-width: 1150px;
+  margin: auto;
+}
+
+.help-heading {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 45px;
+}
+
+.help-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 30px;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.help-heading h2 {
+  margin: 18px 0 12px;
+  font-size: clamp(28px, 4vw, 42px);
+  color: #172554;
+}
+
+.help-heading p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.help-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 25px rgba(30, 41, 59, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.help-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.12);
+}
+
+.help-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  background: #eef2ff;
+  border-radius: 16px;
+  font-size: 28px;
+  margin-bottom: 22px;
+}
+
+.help-card h3 {
+  color: #1e293b;
+  margin: 0 0 12px;
+  font-size: 21px;
+}
+
+.help-card p {
+  color: #64748b;
+  line-height: 1.7;
+  min-height: 72px;
+}
+
+.help-card a,
+.help-card button {
+  display: inline-block;
+  margin-top: 12px;
+  color: #4f46e5;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.help-card button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.help-card a:hover,
+.help-card button:hover {
+  color: #312e81;
+}
+
+.help-contact {
+  margin-top: 35px;
+  padding: 28px 32px;
+  border-radius: 20px;
+  background: #312e81;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.help-contact h3 {
+  margin: 0 0 8px;
+}
+
+.help-contact p {
+  margin: 0;
+  color: #e0e7ff;
+  line-height: 1.6;
+}
+
+.help-contact-btn {
+  background: white;
+  color: #3730a3;
+  padding: 13px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .help-card p {
+    min-height: auto;
+  }
+
+  .help-contact {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <a class="brand" href="#home"><span class="brand-mark">✦</span><span>Connect<span>Circle</span></span></a>
+      <p>Made for curious minds and meaningful connections. <strong>♥</strong></p>
+      <p>© <span id="year"></span> ConnectCircle</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+    const chatMessages = document.getElementById("chatMessages");
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function addMessage(message, sender) {
+      const row = document.createElement("div");
+      row.className = "chat-message" + (sender === "user" ? " user" : "");
+
+      if (sender === "bot") {
+        const avatar = document.createElement("div");
+        avatar.className = "tiny-bot";
+        avatar.setAttribute("aria-hidden", "true");
+        avatar.textContent = "🤖";
+        row.appendChild(avatar);
+      }
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      // textContent prevents user-entered text from being interpreted as HTML.
+      bubble.textContent = message;
+      row.appendChild(bubble);
+      chatMessages.appendChild(row);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getDemoReply(rawMessage) {
+      const message = rawMessage.toLowerCase();
+
+      if (/(community|circle|interest|belong|join|find people)/.test(message)) {
+        return "Let's find your circle! 💜 If you love programming, try Coding Circle. For drawing or design, visit Creative Corner. If you enjoy being active, Sports & Fitness could fit. You can also explore music, gaming, and project teams in the communities section.";
+      }
+      if (/(coding|java|program|developer|project|hackathon|build|website|app)/.test(message)) {
+        return "Project idea time! 🚀  Start with something small that solves a student problem: a study planner, campus event board, peer skill-exchange app, or a club finder. Join Coding Circle or Project Playground to find teammates. What skills do you want to practise?";
+      }
+      if (/(friend|lonely|shy|talk to|conversation|meet people)/.test(message)) {
+        return "Making friends can feel awkward at first, and that's okay. 🌱 Try starting with a shared topic: ask what someone is learning, compliment a project, or invite a classmate to study or play a game. Small, repeated conversations can grow into real friendships.";
+      }
+      if (/(stress|stressed|anxious|overwhelm|sad|study|exam|tired|pressure)/.test(message)) {
+        return "That sounds like a lot to carry. 💛 Try breaking the next task into one small, manageable step, then take a short break. You could also talk with someone you trust or a campus counsellor if things feel heavy. Would it help to make a simple study plan for today?";
+      }
+      if (/(art|draw|paint|design|creative|write|photo)/.test(message)) {
+        return "Creative Corner sounds like your kind of place! 🎨 You could share a sketch, try a weekly theme, swap feedback, or collaborate on a poster or mini-zine. You don't need to be an expert to join—curiosity is enough.";
+      }
+      if (/(sport|fitness|gym|badminton|football|cricket|run|exercise)/.test(message)) {
+        return "Let's get moving! 🏸 Sports & Fitness could help you find a practice buddy or a friendly game. You could start by asking classmates which sport they enjoy and choosing a low-pressure time to play together.";
+      }
+      if (/(music|song|playlist|sing|instrument)/.test(message)) {
+        return "Music & Mood is the place to share your vibe! 🎵 Swap playlists, recommend a song for a mood, or find someone who plays the same instrument. A fun icebreaker: 'What's one song you never skip?'";
+      }
+      if (/(game|gaming|gamer|playstation|minecraft|chess)/.test(message)) {
+        return "Welcome to the Gaming Guild! 🎮 You can compare favourite games, share tips, or find friendly teammates. Start with a simple question like, 'What have you been playing lately?'";
+      }
+      if (/(hello|hi|hey|good morning|good evening)/.test(message)) {
+        return "Hey! 👋 Glad you're here. Tell me what you enjoy—coding, art, sports, music, gaming, or something totally different—and I'll suggest a place to start.";
+      }
+
+      return "Thanks for sharing that with me! ✨ A good next step is to tell me a little more about what you want to do or what you enjoy. I can help brainstorm student project ideas, suggest a community, or think through ways to start a conversation. (I'm currently a demo assistant, so my replies use simple built-in rules.)";
+    }
+
+    function sendMessage(message) {
+      const cleanMessage = message.trim();
+      if (!cleanMessage) return;
+      addMessage(cleanMessage, "user");
+      chatInput.value = "";
+      // This is a local demo reply. Replace getDemoReply with a secure backend/API integration for real AI.
+      window.setTimeout(() => addMessage(getDemoReply(cleanMessage), "bot"), 250);
+    }
+
+    chatForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendMessage(chatInput.value);
+      chatInput.focus();
+    });
+
+    document.querySelectorAll("[data-prompt]").forEach((button) => {
+      button.addEventListener("click", () => sendMessage(button.dataset.prompt));
+    });
+
+    document.querySelectorAll("[data-join]").forEach((button) => {
+    button.addEventListener("click", async () => {
+        const communityName = button.dataset.join;
+
+        const studentId = prompt("Enter your Student ID to join " + communityName);
+
+        if (!studentId) {
+            showToast("Please enter your Student ID.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/communities/join", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    studentId: Number(studentId),
+                    communityName: communityName
+                })
+            });
+
+            const message = await response.text();
+            showToast(message);
+
+            document.getElementById("assistant").scrollIntoView({
+                behavior: "smooth"
+            });
+
+            chatInput.value = "Help me get started with " + communityName;
+            chatInput.focus({ preventScroll: true });
+
+        } catch (error) {
+            showToast("Unable to join community. Please try again.");
+            console.error(error);
+        }
+    });
+});
+
+        
+const profileForm = document.getElementById("profileForm");
+const profileMessage = document.getElementById("profileMessage");
+
+profileForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const name = document.getElementById("studentName").value.trim();
+  const email = document.getElementById("studentEmail").value.trim();
+  const interests = document.getElementById("studentInterests").value.trim();
+
+  profileMessage.textContent = "Saving your profile...";
+
+  try {
+    const response = await fetch("/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, interests })
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not save profile.");
+    }
+
+    const savedUser = await response.json();
+    profileMessage.textContent =
+      "Profile created successfully! Your ID is " + savedUser.id + ".";
+    profileForm.reset();
+  } catch (error) {
+    profileMessage.textContent =
+      "Profile could not be saved. Please check that the server is running.";
+  }
+});
+
+let allStudents = [];
+
+async function loadStudents() {
+    const studentList = document.getElementById("studentList");
+
+    try {
+        const response = await fetch("/user");
+
+        if (!response.ok) {
+            throw new Error("Unable to load students");
+        }
+
+        allStudents = await response.json();
+        displayStudents(allStudents);
+
+    } catch (error) {
+        studentList.innerHTML =
+            "<p>Could not load students. Please try again.</p>";
+        console.error(error);
+    }
+}
+
+function displayStudents(students) {
+    const studentList = document.getElementById("studentList");
+
+    if (students.length === 0) {
+        studentList.innerHTML =
+            "<p>No students found with this interest.</p>";
+        return;
+    }
+
+    studentList.innerHTML = students.map(student => `
+        <article class="community-card">
+            <div class="community-icon">👤</div>
+            <h3>${student.name || "Student"}</h3>
+            <p>${student.email || ""}</p>
+            <div class="tag-list">
+                <span class="tiny-tag">
+                    ${student.interests || "Interests not added"}
+                </span>
+            </div>
+        </article>
+    `).join("");
+}
+
+document.getElementById("interestSearch").addEventListener("input", function () {
+    const searchInterest = this.value.trim().toLowerCase();
+
+    const matchingStudents = allStudents.filter(student =>
+        (student.interests || "")
+            .toLowerCase()
+            .includes(searchInterest)
+    );
+
+    displayStudents(matchingStudents);
+});
+
+loadStudents();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectCircle - Connection Test</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f4f6fb;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #0001;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 8px 0 15px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px 5px 5px 0;
+            border: none;
+            border-radius: 6px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f1f1f1;
+            padding: 15px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>ConnectCircle</h1>
+    <h2>Connection Request Test</h2>
+
+    <label for="senderId">Sender Student ID</label>
+    <input type="number" id="senderId" placeholder="Example: 1">
+
+    <label for="receiverId">Receiver Student ID</label>
+    <input type="number" id="receiverId" placeholder="Example: 2">
+
+    <button onclick="sendRequest()">Send Request</button>
+    <button onclick="viewSent()">View Sent Requests</button>
+    <button onclick="viewReceived()">View Received Requests</button>
+    <br><br>
+
+<label for="requestId">Request ID</label>
+<input type="number" id="requestId" placeholder="Example: 1">
+
+<button onclick="updateStatus('ACCEPTED')">Accept Request</button>
+<button onclick="updateStatus('REJECTED')">Reject Request</button>
+
+    <h3>Result</h3>
+    <pre id="result">Your result will appear here.</pre>
+</div>
+
+<script>
+    const result = document.getElementById("result");
+
+    async function sendRequest() {
+        const senderId = Number(document.getElementById("senderId").value);
+        const receiverId = Number(document.getElementById("receiverId").value);
+
+        if (!senderId || !receiverId || senderId === receiverId) {
+            result.textContent =
+                "Enter two different, valid Student IDs.";
+            return;
+        }
+
+        try {
+            const response = await fetch("/connections/send", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    senderId: senderId,
+                    receiverId: receiverId
+                })
+            });
+
+            const data = await response.json();
+            result.textContent = JSON.stringify(data, null, 2);
+
+        } catch (error) {
+            result.textContent = "Error: " + error.message;
+        }
+    }
+
+    async function viewSent() {
+        const senderId = document.getElementById("senderId").value;
+
+        if (!senderId) {
+            result.textContent = "Enter the Sender Student ID.";
+            return;
+        }
+
+        try {
+            const response = await fetch("/connections/sent/" + senderId);
+            const data = await response.json();
+
+            result.textContent = JSON.stringify(data, null, 2);
+
+        } catch (error) {
+            result.textContent = "Error: " + error.message;
+        }
+    }
+
+    async function viewReceived() {
+        const receiverId = document.getElementById("receiverId").value;
+
+        if (!receiverId) {
+            result.textContent = "Enter the Receiver Student ID.";
+            return;
+        }
+
+        try {
+            const response = await fetch("/connections/received/" + receiverId);
+            const data = await response.json();
+
+            result.textContent = JSON.stringify(data, null, 2);
+
+        } catch (error) {
+            result.textContent = "Error: " + error.message;
+        }
+    }
+
+async function updateStatus(status) {
+    const requestId = document.getElementById("requestId").value;
+
+    if (!requestId) {
+        result.textContent = "Enter the Request ID.";
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `/connections/${requestId}/status?status=${status}`,
+            {
+                method: "PUT"
+            }
+        );
+
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+
+    } catch (error) {
+        result.textContent = "Error: " + error.message;
+    }
+}
+
+</script>
+</body>
+</html>
